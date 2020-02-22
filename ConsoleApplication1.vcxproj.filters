@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="2DGaussian.cpp">
+    <ClCompile Include="ColorBalance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
