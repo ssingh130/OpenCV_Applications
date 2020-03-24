@@ -19,15 +19,16 @@ int main() {
 		//if frame is empty break immediately
 		if (frame.empty())
 			break;
-		imshow("frame", frame);
+		//imshow("frame", frame);
 
 		Mat gray_frame;
 		cvtColor(frame, gray_frame, COLOR_BGR2GRAY);
-		imshow("gray", gray_frame);
+		//imshow("gray", gray_frame);
 
-		GaussianBlur(gray_frame, gray_frame, Size(3, 3), 2, 2);
+		GaussianBlur(gray_frame, gray_frame, Size(9, 9), 2, 2);
 		vector<Vec3f>circles;
-		HoughCircles(gray_frame, circles, HOUGH_GRADIENT, 1, gray_frame.rows / 64, 75, 75*0.4, 25, 50);
+		int p1 = 75;
+		HoughCircles(gray_frame, circles, HOUGH_GRADIENT, 1, gray_frame.rows / 64, p1, p1*0.4, 25, 200);
 
 		//Drawing Circles
 		for (size_t i = 0; i < circles.size(); i++) {
@@ -44,6 +45,8 @@ int main() {
 		if (c == 27)
 			break;
 	}
+
+
 	cap.release();
 	destroyAllWindows();
 	return 0;
