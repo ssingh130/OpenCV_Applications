@@ -75,8 +75,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\OpenCV\opencv\build\include\;D:\OpenCV\opencv\build\install\include\opencv2\;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OpenCV\opencv\build\x64\vc15\lib;D:\OpenCV\opencv\build\install\lib\;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\OpenCV\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\OpenCV\opencv\build\bin\Debug;D:\OpenCV\opencv\build\x64\vc15\lib;D:\OpenCV\opencv\build\install\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -109,13 +109,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\OpenCV\opencv\build\install\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OpenCV\opencv\build\install\include\opencv2\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_world400d.lib;opencv_ximgproc400d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world400d.lib;opencv_ximgproc400d.lib;opencv_aruco400d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -154,7 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="HoughCricle.cpp" />
+    <ClCompile Include="ArucoAR.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
