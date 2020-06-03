@@ -15,13 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AruCo.cpp">
+    <ClCompile Include="Aruco_2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="aruco_params.yml">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

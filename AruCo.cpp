@@ -1,13 +1,9 @@
 //This program is about detecting the aruco markers already created in the previous file
 
 #include<opencv.hpp>
+#include<opencv2/highgui.hpp>
 #include<aruco.hpp>
 #include "aruco/dictionary.hpp";
-#include<sstream>
-#include<iostream>
-#include<fstream>
-#include<calib3d.hpp>
-
 
 using namespace std;
 using namespace cv;
@@ -22,8 +18,8 @@ namespace {
 		"DICT_7X7_100=13, DICT_7X7_250=14, DICT_7X7_1000=15, DICT_ARUCO_ORIGINAL = 16,"
 		"DICT_APRILTAG_16h5=17, DICT_APRILTAG_25h9=18, DICT_APRILTAG_36h10=19, DICT_APRILTAG_36h11=20}"
 		"{v        |       | Input from video file, if ommited, input comes from camera }"
-		"{ci       | 0     | Camera id if input doesnt come from video (-v) }"
-		"{c        |       | Camera intrinsic parameters. Needed for camera pose }"
+		"{ci       |       | Camera id if input doesnt come from video (-v) }"
+		"{c        |	   | Camera intrinsic parameters. Needed for camera pose }"
 		"{l        | 0.1   | Marker side length (in meters). Needed for correct scale in camera pose }"
 		"{dp       |       | File of marker detector parameters }"
 		"{r        |       | show rejected candidates too }"
@@ -82,7 +78,7 @@ int main(int argc, char* argv[] ) {
 	float markerLength = parser.get<float>("l");
 
 
-	VideoCapture cap(0);
+	//VideoCapture cap(0);
 	Mat cameraMatrix, distCoeffs;
 
 	Mat markerImg, markerImgCopy;
@@ -99,17 +95,9 @@ int main(int argc, char* argv[] ) {
 		detectorParams->cornerRefinementMethod = parser.get<int>("refine");
 	}
 	int camId = parser.get<int>("ci");
-	//video input
-	String video;
-	if (parser.has("v")) {
-		video = parser.get<String>("v");
-	}
-	if (!parser.check()) {
-		parser.printErrors();
-		return 0;
-	}
+	
 
-	Ptr<Dictionary> dictionary = getPredefinedDictionary(PREDEFINED_DICTIONARY_NAME(dictionaryId));
+	Ptr<Dictionary> dictionary = getPredefinedDictionary(DICT_4X4_100);
 
 	Mat camMat;
 	if (estimatePose) {
@@ -120,24 +108,25 @@ int main(int argc, char* argv[] ) {
 		}
 	}
 
-	VideoCapture inputVideo;
+	//creating a videocapture object
+
+	VideoCapture cap(0);
 	int waitTime;
-	if (!video.empty()) {
-		inputVideo.open(video);
-		waitTime = 0;
+	if (!cap.isOpened()) {
+		cout << "Error reading input file" << endl;
+		return -1;
 	}
-	else {
-		inputVideo.open(camId);
-		waitTime = 10;
-	}
-	double totalTime = 0;
-	int totalIterations = 0;
 
-	while (inputVideo.grab()) {
+	//double totalTime = 0;
+	//int totalIterations = 0;
+
+	while (true) {
 		Mat img, imgCopy;
-		inputVideo.retrieve(img);
-
-		double tick = (double)getTickCount();
+		cap >> img;
+		if (img.empty())
+			break;
+		//imshow("frame", img);
+		//double tick = (double)getTickCount();
 
 		vector<int>ids;
 		vector<vector<Point2f>>corners, rejected;
@@ -145,16 +134,15 @@ int main(int argc, char* argv[] ) {
 		// detect markers and estimate pose
 		aruco::detectMarkers(img, dictionary, corners, ids, detectorParams, rejected);
 		if (estimatePose && ids.size() > 0)
-			aruco::estimatePoseSingleMarkers(corners, markerLength, camMat, distCoeffs, rvecs,
-				tvecs);
+			aruco::estimatePoseSingleMarkers(corners, markerLength, camMat, distCoeffs, rvecs, tvecs);
 
-		double currentTime = ((double)getTickCount() - tick) / getTickFrequency();
-		totalTime += currentTime;
+		//double currentTime = ((double)getTickCount() - tick) / getTickFrequency();
+		/*totalTime += currentTime;
 		totalIterations++;
 		if (totalIterations % 30 == 0) {
 			cout << "Detection Time = " << currentTime * 1000 << " ms "
 				<< "(Mean = " << 1000 * totalTime / double(totalIterations) << " ms)" << endl;
-		}
+		}*/
 
 		// draw results
 		img.copyTo(imgCopy);
@@ -163,19 +151,21 @@ int main(int argc, char* argv[] ) {
 
 			if (estimatePose) {
 				for (unsigned int i = 0; i < ids.size(); i++)
-					aruco::drawAxis(imgCopy, camMat, distCoeffs, rvecs[i], tvecs[i],
-						markerLength * 0.5f);
+					aruco::drawAxis(imgCopy, camMat, distCoeffs, rvecs[i], tvecs[i], markerLength * 0.5f);
 			}
 		}
 
 		if (showRejected && rejected.size() > 0)
 			aruco::drawDetectedMarkers(imgCopy, rejected, noArray(), Scalar(100, 0, 255));
 
-		imshow("out", imgCopy);
-		char key = (char)waitKey(waitTime);
-		if (key == 27) break;
+		imshow("out", img);
+		char c = (char)waitKey(25);
+		if (c == 27) 
+			break;
 	}
-
+	
+	cap.release();
+	destroyAllWindows();
 	return 0;
 }
 
